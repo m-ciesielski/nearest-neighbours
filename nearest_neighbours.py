@@ -6,9 +6,11 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 
-def nearest_neigbours_graph(points: np.array, n_neighbours=2) -> np.array:
-    nbrs = NearestNeighbors(n_neighbors=n_neighbours, algorithm='ball_tree').fit(points)
-    return nbrs.kneighbors_graph(points).toarray()
+def nearest_neighbours_graph(points: np.array, query_points: np.array or None = None, n_neighbours=2) -> np.array:
+    if query_points is None:
+        query_points = points
+    nbrs = NearestNeighbors(n_neighbors=n_neighbours, algorithm='ball_tree', n_jobs=-1).fit(points)
+    return nbrs.kneighbors_graph(query_points).toarray()
 
 
 def draw_nearest_neighbours_graph(nearest_neigbours_array: np.array, labels: List[str] = None):
@@ -27,3 +29,8 @@ def draw_nearest_neighbours_graph(nearest_neigbours_array: np.array, labels: Lis
         pos = nx.kamada_kawai_layout(nx_graph, scale=scale)
     nx.draw(nx_graph, pos)
     plt.show()
+
+
+def get_nearest_neighbours(neighbours: np.array, labels: List[str] = None):
+    return [labels[i] for i, neighbour in enumerate(neighbours)
+            if neighbour == 1]
